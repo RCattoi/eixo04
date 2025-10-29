@@ -40,9 +40,6 @@ Assim, você poderá acompanhar a criação de tabelas, inserção de dados e de
 ```sh
 git clone https://github.com/RCattoi/eixo04.git
 cd eixo04
-```sh
-git clone https://github.com/RCattoi/eixo04.git
-cd eixo04
 ```
 
 ### 2. Configure o arquivo `.env`
