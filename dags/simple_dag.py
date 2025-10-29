@@ -1,13 +1,53 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 from datetime import datetime, timedelta
 import pandas as pd
 
-# Função que será executada pela DAG
-def hello_world():
-    print("Hello, I'm Alive. Airflow 3.1.0!")
-    df = pd.read_excel("/opt/airflow/files/dados_empresa_alternativa.xlsx")
-    print(df.head())
+
+def check_client_table():
+    hook = PostgresHook(postgres_conn_id='data_db')
+    df = pd.read_excel("/opt/airflow/files/dados_empresa_alternativa.xlsx", sheet_name='clientes')
+    df['tipo_cliente'] = df['tipo_cliente'].apply(lambda x: 'PF' if x == 'Pessoa Física' else 'PJ')
+    client_id_list = df['id_cliente'].tolist()
+    placeholders = ','.join(['%s'] * len(client_id_list))
+    sql = f"SELECT * FROM alternativa.dim_cliente WHERE sk_id_cliente in ({placeholders}) and fim_validade IS NULL"
+    existing_clients = hook.get_records(sql, parameters=tuple(client_id_list))
+    
+    for client in existing_clients:
+        id_cliente = client[4]
+
+        filtro = df['id_cliente'] == id_cliente
+        if not filtro.any():
+            print(f"⚠️ Cliente ID {id_cliente} não encontrado no DataFrame.")
+            continue  # pula para o próximo cliente
+
+        nome_val = df.loc[filtro, 'nome_cliente'].values[0]
+        tipo_val = df.loc[filtro, 'tipo_cliente'].values[0]
+        cidade_val = df.loc[filtro, 'cidade'].values[0]
+
+        nome = nome_val == client[1]
+        tipo = tipo_val == client[2]
+        cidade = cidade_val == client[3]
+
+        if not nome or not tipo or not cidade:
+            sql = 'UPDATE alternativa.dim_cliente SET fim_validade = %s WHERE sk_id_cliente = %s'
+            hook.run(sql, parameters=(datetime.now(), id_cliente))
+        else:
+            df = df[df['id_cliente'] != id_cliente]
+            
+    insert_client_data(df)
+            
+    
+
+
+def insert_client_data(df):
+    hook = PostgresHook(postgres_conn_id='data_db')
+    sql = 'INSERT INTO "alternativa"."dim_cliente" (sk_id_cliente, nome, tipo_cliente, cidade) VALUES (%s, %s, %s, %s)'
+    for index, row in df.iterrows():
+        hook.run(sql, parameters=(int(row['id_cliente']), row['nome_cliente'], row['tipo_cliente'], row['cidade']))
+
+
 
 # Definição da DAG
 with DAG(
@@ -26,8 +66,9 @@ with DAG(
     # Tarefa usando PythonOperator
     task_hello = PythonOperator(
         task_id="print_hello",
-        python_callable=hello_world,
+        python_callable=check_client_table,
     )
+    
 
     # Se houver mais tarefas, você pode encadear assim:
-    # task_hello >> outra_tarefa
+    task_hello
