@@ -11,7 +11,7 @@ def check_client_table():
     df['tipo_cliente'] = df['tipo_cliente'].apply(lambda x: 'PF' if x == 'Pessoa Física' else 'PJ')
     client_id_list = df['id_cliente'].tolist()
     placeholders = ','.join(['%s'] * len(client_id_list))
-    sql = f"SELECT * FROM alternativa.dim_cliente WHERE sk_id_cliente in ({placeholders}) and fim_validade IS NULL"
+    sql = f"SELECT * FROM alternativa.dim_cliente WHERE id_cliente in ({placeholders}) and fim_validade IS NULL"
     existing_clients = hook.get_records(sql, parameters=tuple(client_id_list))
     
     for client in existing_clients:
@@ -19,8 +19,7 @@ def check_client_table():
 
         filtro = df['id_cliente'] == id_cliente
         if not filtro.any():
-            print(f"⚠️ Cliente ID {id_cliente} não encontrado no DataFrame.")
-            continue  # pula para o próximo cliente
+            continue
 
         nome_val = df.loc[filtro, 'nome_cliente'].values[0]
         tipo_val = df.loc[filtro, 'tipo_cliente'].values[0]
@@ -43,7 +42,7 @@ def check_client_table():
 
 def insert_client_data(df):
     hook = PostgresHook(postgres_conn_id='data_db')
-    sql = 'INSERT INTO "alternativa"."dim_cliente" (sk_id_cliente, nome, tipo_cliente, cidade) VALUES (%s, %s, %s, %s)'
+    sql = 'INSERT INTO "alternativa"."dim_cliente" (id_cliente, nome, tipo_cliente, cidade) VALUES (%s, %s, %s, %s)'
     for index, row in df.iterrows():
         hook.run(sql, parameters=(int(row['id_cliente']), row['nome_cliente'], row['tipo_cliente'], row['cidade']))
 
