@@ -30,7 +30,7 @@ def check_client_table():
         cidade = cidade_val == client[3]
 
         if not nome or not tipo or not cidade:
-            sql = 'UPDATE alternativa.dim_cliente SET fim_validade = %s WHERE sk_id_cliente = %s'
+            sql = 'UPDATE alternativa.dim_cliente SET fim_validade = %s WHERE id_cliente = %s and fim_validade IS NULL'
             hook.run(sql, parameters=(datetime.now(), id_cliente))
         else:
             df = df[df['id_cliente'] != id_cliente]
@@ -50,8 +50,8 @@ def insert_client_data(df):
 
 # Definição da DAG
 with DAG(
-    dag_id="simple_hello_dag",
-    description="Uma DAG simples de exemplo",
+    dag_id="process_client_data",
+    description="Processa dados de clientes da planilha e atualiza o banco de dados",
     schedule="@daily",  # roda todo dia
     start_date=datetime(2025, 10, 28),
     catchup=False,  # não executa retroativamente
@@ -63,11 +63,11 @@ with DAG(
 ) as dag:
 
     # Tarefa usando PythonOperator
-    task_hello = PythonOperator(
-        task_id="print_hello",
+    process_data = PythonOperator(
+        task_id="process_data",
         python_callable=check_client_table,
     )
     
 
     # Se houver mais tarefas, você pode encadear assim:
-    task_hello
+    process_data
