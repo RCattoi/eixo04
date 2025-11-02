@@ -14,9 +14,43 @@ CREATE TABLE alternativa.dim_cliente (
 	CONSTRAINT dim_cliente_tipo_cliente_check CHECK (((tipo_cliente)::text = ANY ((ARRAY['PJ'::character varying, 'PF'::character varying])::text[])))
 );
 
+-- alternativa.fato_servico definição
+
+-- Drop table
+
+-- DROP TABLE alternativa.fato_servico;
+
+CREATE TABLE alternativa.fato_servico (
+	id_servico text NOT NULL,
+	id_cliente int4 NULL,
+	id_caminhao int4 NULL,
+	id_residuo int4 NULL,
+	id_motorista int4 NULL,
+	data_solicitacao date NULL,
+	tempo_resposta_horas numeric(5, 2) NULL,
+	tempo_permanencia_dias numeric(5, 2) NULL,
+	peso_residuos_kg numeric NULL,
+	km_percorridos int4 NULL,
+	taxa_ocupacao_percent numeric(5, 2) NULL,
+	CONSTRAINT fato_servico_pkey PRIMARY KEY (id_servico)
+);
 
 
+-- alternativa.dim_funcionario definição
 
+-- Drop table
+
+-- DROP TABLE alternativa.dim_funcionario;
+
+CREATE TABLE alternativa.dim_funcionario (
+	sk_id_funcionario serial4 NOT NULL,
+	id_funcionario int4 NULL,
+	nome varchar(50) NULL,
+	cargo varchar(50) NULL,
+	inicio_validade timestamp DEFAULT now() NOT NULL,
+	fim_validade timestamp NULL,
+	CONSTRAINT dim_funcionario_pkey PRIMARY KEY (sk_id_funcionario)
+);
 
 -- alternativa.dim_frota definição
 
