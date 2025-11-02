@@ -15,7 +15,7 @@ def check_client_table():
     existing_clients = hook.get_records(sql, parameters=tuple(client_id_list))
     
     for client in existing_clients:
-        id_cliente = client[4]
+        id_cliente = client[1]
 
         filtro = df['id_cliente'] == id_cliente
         if not filtro.any():
@@ -25,9 +25,9 @@ def check_client_table():
         tipo_val = df.loc[filtro, 'tipo_cliente'].values[0]
         cidade_val = df.loc[filtro, 'cidade'].values[0]
 
-        nome = nome_val == client[1]
-        tipo = tipo_val == client[2]
-        cidade = cidade_val == client[3]
+        nome = nome_val == client[2]
+        tipo = tipo_val == client[3]
+        cidade = cidade_val == client[4]
 
         if not nome or not tipo or not cidade:
             sql = 'UPDATE alternativa.dim_cliente SET fim_validade = %s WHERE id_cliente = %s and fim_validade IS NULL'

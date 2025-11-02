@@ -1,20 +1,19 @@
 -- alternativa.dim_cliente definição
 
 -- Drop table
-
 -- DROP TABLE alternativa.dim_cliente;
 
 CREATE TABLE alternativa.dim_cliente (
-	sk_id_cliente int4 DEFAULT nextval('alternativa.dim_cliente_id_cliente_seq'::regclass) NOT NULL,
+	sk_id_cliente serial primary key,
+	id_cliente int4 NULL,
 	nome varchar(100) NOT NULL,
 	tipo_cliente varchar(20) NULL,
 	cidade varchar(50) NULL,
-	id_cliente int4 NULL,
 	inicio_validade timestamp DEFAULT now() NOT NULL,
 	fim_validade timestamp NULL,
-	CONSTRAINT dim_cliente_pkey PRIMARY KEY (sk_id_cliente),
 	CONSTRAINT dim_cliente_tipo_cliente_check CHECK (((tipo_cliente)::text = ANY ((ARRAY['PJ'::character varying, 'PF'::character varying])::text[])))
 );
+
 
 
 
