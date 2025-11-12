@@ -4,6 +4,28 @@ Este projeto é uma stack completa para orquestração de pipelines de dados uti
 
 ---
 
+## Sumário
+
+- [Pré-requisitos](#pré-requisitos)
+- [Configurando o DBeaver para acessar o banco PostgreSQL](#configurando-o-dbeaver-para-acessar-o-banco-postgresql)
+- [Passo a Passo para Rodar o Projeto](#passo-a-passo-para-rodar-o-projeto)
+   - [Clone o repositório](#1-clone-o-repositório)
+   - [Configure o arquivo .env](#2-configure-o-arquivo-env)
+   - [Suba os serviços](#5-suba-os-serviços)
+- [Resolução de Problemas Comuns](#resolução-de-problemas-comuns)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Documentação Técnica Completa do Sistema](#documentação-técnica-completa-do-sistema)
+   - [Visão Geral do Projeto](#visão-geral-do-projeto)
+   - [Arquitetura do Sistema](#arquitetura-do-sistema)
+   - [Modelo de Dados](#modelo-de-dados)
+   - [Fluxo de Dados Completo](#fluxo-de-dados-completo)
+   - [Documentação Detalhada das DAGs](#documentação-detalhada-das-dags)
+   - [Processo de Deploy e Inicialização](#processo-de-deploy-e-inicialização)
+   - [Troubleshooting e Debugging](#troubleshooting-e-debugging)
+   - [Melhorias Futuras Sugeridas](#melhorias-futuras-sugeridas)
+   - [Referências e Documentação Adicional](#referências-e-documentação-adicional)
+
+
 ## Pré-requisitos
 
 - **Docker** e **Docker Compose** instalados ([Download Docker Desktop](https://www.docker.com/products/docker-desktop/))
